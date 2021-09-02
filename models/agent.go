@@ -10,14 +10,15 @@ import (
 )
 
 type Agent struct {
-	ID        primitive.ObjectID `bson:"_id,omitempty"`
-	AgentID   uuid.UUID
-	ScraperID uuid.UUID
-	Enabled   bool
-	LastSeen  time.Time
-	OS        AgentOS
-	State     AgentState
-	Items     []primitive.ObjectID
+	ID            primitive.ObjectID `bson:"_id,omitempty"`
+	AgentID       uuid.UUID
+	ScraperID     uuid.UUID
+	Enabled       bool
+	LastSeen      time.Time
+	OS            AgentOS
+	State         AgentState
+	Items         []primitive.ObjectID
+	ItemsResolved []Item `bson:"-"`
 }
 
 //AgentOS defines on which OS the agent ist running
