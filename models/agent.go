@@ -17,6 +17,7 @@ type Agent struct {
 	LastSeen  time.Time
 	OS        AgentOS
 	State     AgentState
+	Items     []primitive.ObjectID
 }
 
 //AgentOS defines on which OS the agent ist running
