@@ -16,6 +16,7 @@ type Agent struct {
 	Enabled   bool
 	LastSeen  time.Time
 	OS        AgentOS
+	State     AgentState
 }
 
 //AgentOS defines on which OS the agent ist running
@@ -27,6 +28,16 @@ const (
 	//Linux is set on linux machines
 	Linux
 	Unsupported
+)
+
+//HostState defines if the host is regarded online by the assigned leader
+type AgentState int
+
+const (
+	//Online is set if the OnlineDetection succeeds
+	Online AgentState = iota
+	//Offline is set if the OnlineDetection fails
+	Offline
 )
 
 func AgentosFromString(OS string) (AgentOS, error) {
