@@ -13,7 +13,6 @@ import (
 type Agent struct {
 	ID            primitive.ObjectID `bson:"_id,omitempty"`
 	AgentID       uuid.UUID
-	ScraperID     uuid.UUID
 	Enabled       bool
 	LastSeen      time.Time
 	OS            AgentOS
@@ -21,6 +20,10 @@ type Agent struct {
 	Items         []primitive.ObjectID
 	ItemsResolved []Item `bson:"-"`
 	Endpoint      *url.URL
+	Scraper       struct {
+		UUID uuid.UUID
+		Lock time.Time
+	}
 }
 
 //AgentOS defines on which OS the agent ist running
