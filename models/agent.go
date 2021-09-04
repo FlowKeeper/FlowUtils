@@ -20,7 +20,7 @@ type Agent struct {
 	State         AgentState
 	Items         []primitive.ObjectID
 	ItemsResolved []Item `bson:"-"`
-	Endpoint      url.URL
+	Endpoint      *url.URL
 }
 
 //AgentOS defines on which OS the agent ist running
