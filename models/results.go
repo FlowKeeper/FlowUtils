@@ -39,6 +39,7 @@ func (set ResultSet) Type() ReturnType {
 const resultSetLoggingArea = "EVAL"
 
 var ErrWrongItemType = errors.New("function can't be called on text items")
+var ErrNoResults = errors.New("there are no results to return")
 
 func (set ResultSet) Min() (float64, error) {
 	if set.Type() == Text {
@@ -98,14 +99,29 @@ func (set ResultSet) Diff() (float64, error) {
 		return 0, ErrWrongItemType
 	}
 
-	lastItem := len(set.Results) - 1
-	preLastItem := lastItem - 1
-	//Don't undeflow the index if there is only one result
-	if preLastItem < 0 {
-		preLastItem = 0
+	if len(set.Results) == 0 {
+		return 0, ErrNoResults
 	}
 
-	return math.Abs(math.Abs(set.Results[lastItem].ValueNumeric) - math.Abs(set.Results[preLastItem].ValueNumeric)), nil
+	secondItem := 1
+	if len(set.Results) == 1 {
+		secondItem = 0
+	}
+
+	return math.Abs(math.Abs(set.Results[0].ValueNumeric) - math.Abs(set.Results[secondItem].ValueNumeric)), nil
+}
+
+func (set ResultSet) LastNumeric() (float64, error) {
+	if set.Type() == Text {
+		logger.Error(resultSetLoggingArea, "Something tried to calculate avg for item with wrong type!")
+		return 0, ErrWrongItemType
+	}
+
+	if len(set.Results) == 0 {
+		return 0, ErrNoResults
+	}
+
+	return set.Results[0].ValueNumeric, nil
 }
 
 /*
