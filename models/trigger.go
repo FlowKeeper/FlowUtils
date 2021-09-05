@@ -28,7 +28,6 @@ const (
 )
 
 type TriggerAssignment struct {
-	ID          primitive.ObjectID `bson:"_id,omitempty"`
 	Enabled     bool
 	TriggerID   primitive.ObjectID
 	Trigger     Trigger `bson:"-"`
