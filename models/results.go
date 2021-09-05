@@ -41,19 +41,24 @@ const resultSetLoggingArea = "EVAL"
 var ErrWrongItemType = errors.New("function can't be called on text items")
 var ErrNoResults = errors.New("there are no results to return")
 
-func (set ResultSet) Min(Limit int) (float64, error) {
+//Min returns the minimum value within the resultset
+//If Limit != 0 only the last N values are evaluated
+//Limit is a float64 because of govaluate, which always seems to pass arguments as float64 (even if no decimal point is present)
+func (set ResultSet) Min(Limit float64) (float64, error) {
 	if set.Type() == Text {
 		logger.Error(resultSetLoggingArea, "Something tried to calculate min for item with wrong type!")
 		return 0, ErrWrongItemType
 	}
 
-	if len(set.Results) < Limit || Limit == 0 {
-		Limit = len(set.Results)
+	integerLimit := int(Limit)
+
+	if len(set.Results) < integerLimit || integerLimit == 0 {
+		integerLimit = len(set.Results)
 	}
 
 	var min float64
 
-	for i, k := range set.Results[:Limit] {
+	for i, k := range set.Results[:integerLimit] {
 		if i == 0 {
 			min = k.ValueNumeric
 		}
@@ -65,19 +70,24 @@ func (set ResultSet) Min(Limit int) (float64, error) {
 	return min, nil
 }
 
-func (set ResultSet) Max(Limit int) (float64, error) {
+//Max returns the maximum value within the resultset
+//If Limit != 0 only the last N values are evaluated
+//Limit is a float64 because of govaluate, which always seems to pass arguments as float64 (even if no decimal point is present)
+func (set ResultSet) Max(Limit float64) (float64, error) {
 	if set.Type() == Text {
 		logger.Error(resultSetLoggingArea, "Something tried to calculate max for item with wrong type!")
 		return 0, ErrWrongItemType
 	}
 
-	if len(set.Results) < Limit || Limit == 0 {
-		Limit = len(set.Results)
+	integerLimit := int(Limit)
+
+	if len(set.Results) < integerLimit || integerLimit == 0 {
+		integerLimit = len(set.Results)
 	}
 
 	var max float64
 
-	for i, k := range set.Results[:Limit] {
+	for i, k := range set.Results[:integerLimit] {
 		if i == 0 {
 			max = k.ValueNumeric
 		}
@@ -89,19 +99,24 @@ func (set ResultSet) Max(Limit int) (float64, error) {
 	return max, nil
 }
 
-func (set ResultSet) Avg(Limit int) (float64, error) {
+//Max returns the average value within the resultset
+//If Limit != 0 only the last N values are evaluated
+//Limit is a float64 because of govaluate, which always seems to pass arguments as float64 (even if no decimal point is present)
+func (set ResultSet) Avg(Limit float64) (float64, error) {
 	if set.Type() == Text {
 		logger.Error(resultSetLoggingArea, "Something tried to calculate avg for item with wrong type!")
 		return 0, ErrWrongItemType
 	}
 
-	if len(set.Results) < Limit || Limit == 0 {
-		Limit = len(set.Results)
+	integerLimit := int(Limit)
+
+	if len(set.Results) < integerLimit || integerLimit == 0 {
+		integerLimit = len(set.Results)
 	}
 
 	var sum float64
 
-	for _, k := range set.Results[:Limit] {
+	for _, k := range set.Results[:integerLimit] {
 		sum += k.ValueNumeric
 	}
 	return sum / float64(len(set.Results)), nil
