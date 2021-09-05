@@ -18,6 +18,7 @@ type Agent struct {
 	OS            AgentOS
 	State         AgentState
 	Items         []primitive.ObjectID
+	Triggers      []primitive.ObjectID
 	ItemsResolved []Item `bson:"-"`
 	Endpoint      *url.URL
 	Scraper       struct {
