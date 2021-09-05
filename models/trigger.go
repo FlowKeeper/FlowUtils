@@ -1,6 +1,8 @@
 package models
 
-import "go.mongodb.org/mongo-driver/bson/primitive"
+import (
+	"go.mongodb.org/mongo-driver/bson/primitive"
+)
 
 type Trigger struct {
 	ID                primitive.ObjectID `bson:"_id,omitempty"`
@@ -24,3 +26,11 @@ const (
 	//HIGH should be used for items which have a high impact in availability,etc.
 	HIGH
 )
+
+type TriggerAssignment struct {
+	ID          primitive.ObjectID `bson:"_id,omitempty"`
+	Enabled     bool
+	TriggerID   primitive.ObjectID
+	Trigger     Trigger `bson:"-"`
+	Problematic bool
+}
