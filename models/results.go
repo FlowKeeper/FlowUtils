@@ -37,7 +37,7 @@ func (set ResultSet) Type() ReturnType {
 
 const resultSetLoggingArea = "EVAL"
 
-var ErrWrongItemType = errors.New("last can't be called on text items")
+var ErrWrongItemType = errors.New("function can't be called on text items")
 
 func (set ResultSet) Min() (float64, error) {
 	if set.Type() == Text {
@@ -91,6 +91,7 @@ func (set ResultSet) Avg() (float64, error) {
 	return sum / float64(len(set.Results)), nil
 }
 
+/*
 func (set ResultSet) NumericLast(Count int) (ResultSet, error) {
 	var dummyResultSet ResultSet
 	dummyResultSet.Results = make([]Result, 0)
@@ -123,3 +124,4 @@ func (set ResultSet) NumericLast(Count int) (ResultSet, error) {
 
 	return slicedResults, nil
 }
+*/
