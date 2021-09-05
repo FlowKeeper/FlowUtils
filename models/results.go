@@ -2,6 +2,7 @@ package models
 
 import (
 	"errors"
+	"math"
 	"time"
 
 	"gitlab.cloud.spuda.net/Wieneo/golangutils/v2/logger"
@@ -89,6 +90,22 @@ func (set ResultSet) Avg() (float64, error) {
 		sum += k.ValueNumeric
 	}
 	return sum / float64(len(set.Results)), nil
+}
+
+func (set ResultSet) Diff() (float64, error) {
+	if set.Type() == Text {
+		logger.Error(resultSetLoggingArea, "Something tried to calculate avg for item with wrong type!")
+		return 0, ErrWrongItemType
+	}
+
+	lastItem := len(set.Results) - 1
+	preLastItem := lastItem - 1
+	//Don't undeflow the index if there is only one result
+	if preLastItem < 0 {
+		preLastItem = 0
+	}
+
+	return math.Abs(math.Abs(set.Results[lastItem].ValueNumeric) - math.Abs(set.Results[preLastItem].ValueNumeric)), nil
 }
 
 /*
