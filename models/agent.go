@@ -21,6 +21,7 @@ type Agent struct {
 	ItemsResolved    []Item `bson:"-"`
 	Triggers         []primitive.ObjectID
 	TriggersResolved []Trigger `bson:"-"`
+	ActiveTriggers   []primitive.ObjectID
 	Endpoint         *url.URL
 	Scraper          struct {
 		UUID uuid.UUID
