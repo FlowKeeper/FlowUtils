@@ -64,3 +64,14 @@ func AgentosFromString(OS string) (AgentOS, error) {
 		}
 	}
 }
+
+func (a Agent) ProblematicTriggers() []TriggerAssignment {
+	problematicTriggers := make([]TriggerAssignment, 0)
+	for _, k := range a.Triggers {
+		if k.Problematic {
+			problematicTriggers = append(problematicTriggers, k)
+		}
+	}
+
+	return problematicTriggers
+}
