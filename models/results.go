@@ -110,7 +110,7 @@ func (set ResultSet) NumericLast(Count float64) (ResultSet, error) {
 	}
 
 	indexPointer := len(set.Results)
-	indexTarget := indexPointer - Count
+	indexTarget := indexPointer - int(Count)
 
 	//If we request more items than present in the result set, just return everything we have
 	if indexTarget < 0 {
