@@ -12,7 +12,7 @@ import (
 
 type Agent struct {
 	ID            primitive.ObjectID `bson:"_id,omitempty"`
-	AgentID       uuid.UUID
+	AgentUUID     uuid.UUID
 	Enabled       bool
 	LastSeen      time.Time
 	OS            AgentOS
