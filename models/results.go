@@ -91,7 +91,7 @@ func (set ResultSet) Avg() (float64, error) {
 	return sum / float64(len(set.Results)), nil
 }
 
-func (set ResultSet) NumericLast(Count int) (ResultSet, error) {
+func (set ResultSet) NumericLast(Count float64) (ResultSet, error) {
 	var dummyResultSet ResultSet
 	dummyResultSet.Results = make([]Result, 0)
 
