@@ -1,6 +1,7 @@
 package models
 
 import (
+	"gitlab.cloud.spuda.net/Wieneo/golangutils/v2/stringHelper"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
@@ -32,4 +33,9 @@ type TriggerAssignment struct {
 	TriggerID   primitive.ObjectID
 	Trigger     Trigger `bson:"-"`
 	Problematic bool
+	Error       string
+}
+
+func (t TriggerAssignment) HasError() bool {
+	return !stringHelper.IsEmpty(t.Error)
 }

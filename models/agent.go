@@ -65,6 +65,7 @@ func AgentosFromString(OS string) (AgentOS, error) {
 	}
 }
 
+//ProblematicTriggers returns all trigger assignments, which are currently in a problematic state
 func (a Agent) ProblematicTriggers() []TriggerAssignment {
 	problematicTriggers := make([]TriggerAssignment, 0)
 	for _, k := range a.Triggers {
