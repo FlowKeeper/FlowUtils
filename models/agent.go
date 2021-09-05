@@ -11,17 +11,18 @@ import (
 )
 
 type Agent struct {
-	ID            primitive.ObjectID `bson:"_id,omitempty"`
-	AgentUUID     uuid.UUID
-	Enabled       bool
-	LastSeen      time.Time
-	OS            AgentOS
-	State         AgentState
-	Items         []primitive.ObjectID
-	Triggers      []primitive.ObjectID
-	ItemsResolved []Item `bson:"-"`
-	Endpoint      *url.URL
-	Scraper       struct {
+	ID               primitive.ObjectID `bson:"_id,omitempty"`
+	AgentUUID        uuid.UUID
+	Enabled          bool
+	LastSeen         time.Time
+	OS               AgentOS
+	State            AgentState
+	Items            []primitive.ObjectID
+	ItemsResolved    []Item `bson:"-"`
+	Triggers         []primitive.ObjectID
+	TriggersResolved []Trigger `bson:"-"`
+	Endpoint         *url.URL
+	Scraper          struct {
 		UUID uuid.UUID
 		Lock time.Time
 	}
