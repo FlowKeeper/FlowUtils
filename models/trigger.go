@@ -33,7 +33,6 @@ type TriggerAssignment struct {
 	TriggerID   primitive.ObjectID
 	Trigger     Trigger `bson:"-"`
 	Problematic bool
-	LastValues  []string
 	Error       string
 }
 
