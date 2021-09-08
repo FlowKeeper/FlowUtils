@@ -42,33 +42,72 @@ func getAgentByField(Client *mongo.Database, Field string, Value interface{}) (m
 		return models.Agent{}, err
 	}
 
-	//Fix if array is nil
-	if agent.Items == nil {
-		agent.Items = make([]primitive.ObjectID, 0)
-	}
-	if agent.ItemsResolved == nil {
-		agent.ItemsResolved = make([]models.Item, 0)
-	}
-	if agent.Triggers == nil {
-		agent.Triggers = make([]models.TriggerAssignment, 0)
-	}
-
-	if len(agent.Items) > 0 {
-		var err error
-		agent.ItemsResolved, err = GetItems(Client, agent.Items)
-		if err != nil {
-			return agent, err
-		}
-	}
-
-	for i, k := range agent.Triggers {
-		var err error
-		agent.Triggers[i].Trigger, err = GetTrigger(Client, k.TriggerID)
-		if err != nil {
-			logger.Error("Couldn't resolve trigger", k.TriggerID, ":", err)
-			return agent, err
-		}
+	if err := populateAgentFields(Client, &agent); err != nil {
+		return models.Agent{}, err
 	}
 
 	return agent, nil
+}
+
+func GetAgents(Client *mongo.Database) ([]models.Agent, error) {
+	var agents []models.Agent
+
+	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
+	defer cancel()
+	result, err := Client.Collection("agents").Find(ctx, bson.M{})
+
+	if err != nil {
+		logger.Error(loggingArea, "Couldn't fetch agents from db:", err)
+		return agents, err
+	}
+
+	err = result.All(ctx, &agents)
+
+	if err != nil {
+		logger.Error(loggingArea, "Couldn't decode agents:", err)
+	}
+
+	if agents == nil {
+		agents = make([]models.Agent, 0)
+	}
+
+	for i := range agents {
+		if err := populateAgentFields(Client, &agents[i]); err != nil {
+			return agents, err
+		}
+	}
+
+	return agents, nil
+}
+
+func populateAgentFields(Client *mongo.Database, Agent *models.Agent) error {
+	//Fix if array is nil
+	if Agent.Items == nil {
+		Agent.Items = make([]primitive.ObjectID, 0)
+	}
+	if Agent.ItemsResolved == nil {
+		Agent.ItemsResolved = make([]models.Item, 0)
+	}
+	if Agent.Triggers == nil {
+		Agent.Triggers = make([]models.TriggerAssignment, 0)
+	}
+
+	if len(Agent.Items) > 0 {
+		var err error
+		Agent.ItemsResolved, err = GetItems(Client, Agent.Items)
+		if err != nil {
+			return err
+		}
+	}
+
+	for i, k := range Agent.Triggers {
+		var err error
+		Agent.Triggers[i].Trigger, err = GetTrigger(Client, k.TriggerID)
+		if err != nil {
+			logger.Error("Couldn't resolve trigger", k.TriggerID, ":", err)
+			return err
+		}
+	}
+
+	return nil
 }
