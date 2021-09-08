@@ -29,12 +29,12 @@ const (
 )
 
 type TriggerAssignment struct {
-	Enabled          bool
-	TriggerID        primitive.ObjectID
-	Trigger          Trigger `bson:"-"`
-	Problematic      bool
-	ProblematicValue string
-	Error            string
+	Enabled     bool
+	TriggerID   primitive.ObjectID
+	Trigger     Trigger `bson:"-"`
+	Problematic bool
+	LastValues  []string
+	Error       string
 }
 
 func (t TriggerAssignment) HasError() bool {
