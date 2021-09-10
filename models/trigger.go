@@ -1,6 +1,8 @@
 package models
 
 import (
+	"time"
+
 	"gitlab.cloud.spuda.net/Wieneo/golangutils/v2/stringHelper"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
@@ -34,6 +36,11 @@ type TriggerAssignment struct {
 	Trigger     Trigger `bson:"-"`
 	Problematic bool
 	Error       string
+	History     []TriggerHistoryEntry
+}
+
+type TriggerHistoryEntry struct {
+	StartTime, EndTime time.Time
 }
 
 func (t TriggerAssignment) HasError() bool {
