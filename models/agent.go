@@ -22,6 +22,7 @@ type Agent struct {
 	ItemsResolved     []Item `bson:"-"`
 	Triggers          []TriggerAssignment
 	Endpoint          *url.URL
+	ScrapeInterval    int //In seconds
 	Scraper           struct {
 		UUID uuid.UUID
 		Lock time.Time
