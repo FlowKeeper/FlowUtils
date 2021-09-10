@@ -82,30 +82,37 @@ func GetAgents(Client *mongo.Database) ([]models.Agent, error) {
 
 func populateAgentFields(Client *mongo.Database, Agent *models.Agent) error {
 	//Fix if array is nil
-	if Agent.Items == nil {
-		Agent.Items = make([]primitive.ObjectID, 0)
+	if Agent.TemplateIDs == nil {
+		Agent.Templates = make([]models.Template, 0)
 	}
-	if Agent.ItemsResolved == nil {
-		Agent.ItemsResolved = make([]models.Item, 0)
+	if Agent.Templates == nil {
+		Agent.Templates = make([]models.Template, 0)
 	}
-	if Agent.Triggers == nil {
-		Agent.Triggers = make([]models.TriggerAssignment, 0)
+	if Agent.TriggerMappings == nil {
+		Agent.TriggerMappings = make([]models.TriggerAssignment, 0)
 	}
 
-	if len(Agent.Items) > 0 {
+	if len(Agent.TemplateIDs) > 0 {
 		var err error
-		Agent.ItemsResolved, err = GetItems(Client, Agent.Items)
+		Agent.Templates, err = GetTemplates(Client, Agent.TemplateIDs)
 		if err != nil {
 			return err
 		}
 	}
 
-	for i, k := range Agent.Triggers {
-		var err error
-		Agent.Triggers[i].Trigger, err = GetTrigger(Client, k.TriggerID)
-		if err != nil {
-			logger.Error("Couldn't resolve trigger", k.TriggerID, ":", err)
-			return err
+	//Check if all trigger assignments are still referencing triggers assigned to the agent
+	for _, k := range Agent.TriggerMappings {
+		if _, err := Agent.GetTrigger(k.TriggerID); err != nil {
+			logger.Debug(loggingArea, "Found outdated trigger assignment on agent", Agent.Name, "-> Removing it")
+			//ToDo: Remove trigger assignment
+		}
+	}
+
+	//Check if all assigned triggers have a valid trigger assignment
+	for _, trigger := range Agent.GetAllTriggers() {
+		if _, err := Agent.GetTriggerMappingByTriggerID(trigger.ID); err != nil {
+			logger.Debug(loggingArea, "Found trigger without trigger assignement on agent", Agent.Name, "-> Adding it")
+			//ToDo: Add trigger assignment
 		}
 	}
 

@@ -33,7 +33,6 @@ const (
 type TriggerAssignment struct {
 	Enabled     bool
 	TriggerID   primitive.ObjectID
-	Trigger     Trigger `bson:"-"`
 	Problematic bool
 	Error       string
 	History     []TriggerHistoryEntry
