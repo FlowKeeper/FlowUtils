@@ -40,7 +40,8 @@ type TriggerAssignment struct {
 }
 
 type TriggerHistoryEntry struct {
-	StartTime, EndTime time.Time
+	Time        time.Time
+	Problematic bool
 }
 
 func (t TriggerAssignment) HasError() bool {
