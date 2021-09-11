@@ -2,6 +2,7 @@ package dbtemplate
 
 import (
 	"context"
+	"errors"
 	"time"
 
 	"gitlab.cloud.spuda.net/Wieneo/golangutils/v2/logger"
@@ -28,4 +29,26 @@ func GetItems(Client *mongo.Database, IDs []primitive.ObjectID) ([]models.Item, 
 	}
 
 	return items, nil
+}
+
+func GetItemByName(Client *mongo.Database, Name string) (models.Item, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
+	result := Client.Collection("items").FindOne(ctx, bson.M{"name": Name})
+
+	if result.Err() != nil {
+		if errors.Is(result.Err(), mongo.ErrNoDocuments) {
+			return models.Item{}, result.Err()
+		}
+
+		logger.Error(loggingArea, "Couldn't read item:", result.Err())
+		return models.Item{}, result.Err()
+	}
+
+	var item models.Item
+	if err := result.Decode(&item); err != nil {
+		logger.Error(loggingArea, "Couldn't decode item:", err)
+	}
+
+	return item, nil
 }
