@@ -83,7 +83,7 @@ func GetAgents(Client *mongo.Database) ([]models.Agent, error) {
 func populateAgentFields(Client *mongo.Database, Agent *models.Agent) error {
 	//Fix if array is nil
 	if Agent.TemplateIDs == nil {
-		Agent.Templates = make([]models.Template, 0)
+		Agent.TemplateIDs = make([]primitive.ObjectID, 0)
 	}
 	if Agent.Templates == nil {
 		Agent.Templates = make([]models.Template, 0)
