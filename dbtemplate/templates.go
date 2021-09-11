@@ -27,20 +27,48 @@ func GetTemplates(Client *mongo.Database, IDs []primitive.ObjectID) ([]models.Te
 		logger.Error(loggingArea, "Couldn't decode template array:", err)
 	}
 
-	for i, k := range templates {
-		if len(k.ItemIDs) > 0 {
-			templates[i].Items, err = GetItems(Client, k.ItemIDs)
-			if err != nil {
-				logger.Error(loggingArea, "Couldn't get items for template", k.ID, ":", err)
-			}
-		}
-		if len(k.TriggerIDs) > 0 {
-			templates[i].Triggers, err = GetTriggers(Client, k.TriggerIDs)
-			if err != nil {
-				logger.Error(loggingArea, "Couldn't get triggers for template", k.ID, ":", err)
-			}
-		}
+	for i := range templates {
+		populateTemplateFields(Client, &templates[i])
 	}
 
 	return templates, nil
+}
+
+func GetAllTemplates(Client *mongo.Database) ([]models.Template, error) {
+	templates := make([]models.Template, 0)
+
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
+	result, err := Client.Collection("templates").Find(ctx, bson.M{})
+
+	if err != nil {
+		logger.Error(loggingArea, "Couldn't read template:", err)
+		return templates, err
+	}
+
+	if err := result.All(ctx, &templates); err != nil {
+		logger.Error(loggingArea, "Couldn't decode template array:", err)
+	}
+
+	for i := range templates {
+		populateTemplateFields(Client, &templates[i])
+	}
+
+	return templates, nil
+}
+
+func populateTemplateFields(Client *mongo.Database, Template *models.Template) {
+	var err error
+	if len(Template.ItemIDs) > 0 {
+		Template.Items, err = GetItems(Client, Template.ItemIDs)
+		if err != nil {
+			logger.Error(loggingArea, "Couldn't get items for template", Template.ID, ":", err)
+		}
+	}
+	if len(Template.TriggerIDs) > 0 {
+		Template.Triggers, err = GetTriggers(Client, Template.TriggerIDs)
+		if err != nil {
+			logger.Error(loggingArea, "Couldn't get triggers for template", Template.ID, ":", err)
+		}
+	}
 }
