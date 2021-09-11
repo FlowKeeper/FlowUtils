@@ -112,9 +112,34 @@ func populateAgentFields(Client *mongo.Database, Agent *models.Agent) error {
 	for _, trigger := range Agent.GetAllTriggers() {
 		if _, err := Agent.GetTriggerMappingByTriggerID(trigger.ID); err != nil {
 			logger.Debug(loggingArea, "Found trigger without trigger assignement on agent", Agent.Name, "-> Adding it")
-			//ToDo: Add trigger assignment
+			AddTriggerAssignment(Client, Agent.ID, trigger.ID)
 		}
 	}
 
 	return nil
+}
+
+func AddTriggerAssignment(Client *mongo.Database, AgentID primitive.ObjectID, TriggerID primitive.ObjectID) error {
+	return AddTriggerAssignments(Client, AgentID, []primitive.ObjectID{TriggerID})
+}
+
+func AddTriggerAssignments(Client *mongo.Database, AgentID primitive.ObjectID, TriggerIDs []primitive.ObjectID) error {
+	newMappings := make([]models.TriggerAssignment, 0)
+	for _, k := range TriggerIDs {
+		newMappings = append(newMappings, models.TriggerAssignment{
+			TriggerID: k,
+			Enabled:   true,
+		})
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
+
+	result := Client.Collection("agents").FindOneAndUpdate(ctx, bson.M{"_id": AgentID}, bson.M{"$push": bson.M{"triggermappings": bson.M{"$each": newMappings}}})
+
+	if result.Err() != nil {
+		logger.Error(loggingArea, "Couldn't add trigger mappings to agent:", result.Err())
+	}
+
+	return result.Err()
 }
