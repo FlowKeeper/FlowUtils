@@ -2,7 +2,6 @@ package models
 
 import (
 	"errors"
-	"net/url"
 	"strings"
 	"time"
 
@@ -22,7 +21,7 @@ type Agent struct {
 	TemplateIDs       []primitive.ObjectID
 	Templates         []Template `bson:"-"`
 	TriggerMappings   []TriggerAssignment
-	Endpoint          *url.URL
+	Endpoint          string
 	ScrapeInterval    int //In seconds
 	Scraper           struct {
 		UUID uuid.UUID
