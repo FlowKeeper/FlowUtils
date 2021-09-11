@@ -58,6 +58,20 @@ func GetAllTemplates(Client *mongo.Database) ([]models.Template, error) {
 }
 
 func populateTemplateFields(Client *mongo.Database, Template *models.Template) {
+	//Ensure all arrays != nil
+	if Template.ItemIDs == nil {
+		Template.ItemIDs = make([]primitive.ObjectID, 0)
+	}
+	if Template.Items == nil {
+		Template.Items = make([]models.Item, 0)
+	}
+	if Template.TriggerIDs == nil {
+		Template.TriggerIDs = make([]primitive.ObjectID, 0)
+	}
+	if Template.Triggers == nil {
+		Template.Triggers = make([]models.Trigger, 0)
+	}
+
 	var err error
 	if len(Template.ItemIDs) > 0 {
 		Template.Items, err = GetItems(Client, Template.ItemIDs)
