@@ -2,6 +2,7 @@ package dbtemplate
 
 import (
 	"context"
+	"errors"
 	"time"
 
 	"gitlab.cloud.spuda.net/Wieneo/golangutils/v2/logger"
@@ -18,6 +19,28 @@ func GetTrigger(Client *mongo.Database, ID primitive.ObjectID) (models.Trigger, 
 	}
 
 	return triggers[0], nil
+}
+
+func GetTriggerByName(Client *mongo.Database, Name string) (models.Trigger, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
+	result := Client.Collection("triggers").FindOne(ctx, bson.M{"name": Name})
+
+	if result.Err() != nil {
+		if errors.Is(result.Err(), mongo.ErrNoDocuments) {
+			return models.Trigger{}, result.Err()
+		}
+
+		logger.Error(loggingArea, "Couldn't read item:", result.Err())
+		return models.Trigger{}, result.Err()
+	}
+
+	var trigger models.Trigger
+	if err := result.Decode(&trigger); err != nil {
+		logger.Error(loggingArea, "Couldn't decode item:", err)
+	}
+
+	return trigger, nil
 }
 
 func GetTriggers(Client *mongo.Database, IDs []primitive.ObjectID) ([]models.Trigger, error) {
