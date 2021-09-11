@@ -20,7 +20,7 @@ func GetAgent(Client *mongo.Database, ID primitive.ObjectID) (models.Agent, erro
 	return getAgentByField(Client, "_id", ID)
 }
 
-//GetAgent returns the appropriate agent for the given UUID
+//GetAgentByUUID returns the appropriate agent for the given UUID
 func GetAgentByUUID(Client *mongo.Database, UUID uuid.UUID) (models.Agent, error) {
 	return getAgentByField(Client, "agentuuid", UUID)
 }

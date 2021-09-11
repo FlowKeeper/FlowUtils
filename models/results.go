@@ -41,6 +41,8 @@ const resultSetLoggingArea = "EVAL"
 
 //ErrWrongItemType is returned if numeric functions are used on text items or vice versa
 var ErrWrongItemType = errors.New("function can't be called on text items")
+
+//ErrNoResults is returned if a ResultSet has no / not enough values
 var ErrNoResults = errors.New("there are no results to return")
 
 //Min returns the minimum value within the ResultSet
