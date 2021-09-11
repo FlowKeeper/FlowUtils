@@ -12,6 +12,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
+//GetTrigger gets the appropriate trigger which matches the specified ID
 func GetTrigger(Client *mongo.Database, ID primitive.ObjectID) (models.Trigger, error) {
 	triggers, err := GetTriggers(Client, []primitive.ObjectID{ID})
 	if err != nil {
@@ -21,6 +22,7 @@ func GetTrigger(Client *mongo.Database, ID primitive.ObjectID) (models.Trigger, 
 	return triggers[0], nil
 }
 
+//GetTriggerByName gets the appropriate trigger which matches the specified Name
 func GetTriggerByName(Client *mongo.Database, Name string) (models.Trigger, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
@@ -43,6 +45,9 @@ func GetTriggerByName(Client *mongo.Database, Name string) (models.Trigger, erro
 	return trigger, nil
 }
 
+//GetTriggers returns one or multiple trigger structs for the specified IDs
+//If a trigger id isn't found in the database, no error is caused
+//Instead the missing trigger is omitted from the returned item slice
 func GetTriggers(Client *mongo.Database, IDs []primitive.ObjectID) ([]models.Trigger, error) {
 	triggers := make([]models.Trigger, 0)
 

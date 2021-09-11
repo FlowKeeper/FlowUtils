@@ -21,6 +21,7 @@ type Result struct {
 	Error        string
 }
 
+//ResultSet stores a collection of results
 type ResultSet struct {
 	Results []Result
 }
@@ -38,10 +39,11 @@ func (set ResultSet) Type() ReturnType {
 
 const resultSetLoggingArea = "EVAL"
 
+//ErrWrongItemType is returned if numeric functions are used on text items or vice versa
 var ErrWrongItemType = errors.New("function can't be called on text items")
 var ErrNoResults = errors.New("there are no results to return")
 
-//Min returns the minimum value within the resultset
+//Min returns the minimum value within the ResultSet
 //If Limit != 0 only the last N values are evaluated
 //Limit is a float64 because of govaluate, which always seems to pass arguments as float64 (even if no decimal point is present)
 func (set ResultSet) Min(Limit float64) (float64, error) {
@@ -70,7 +72,7 @@ func (set ResultSet) Min(Limit float64) (float64, error) {
 	return min, nil
 }
 
-//Max returns the maximum value within the resultset
+//Max returns the maximum value within the ResultSet
 //If Limit != 0 only the last N values are evaluated
 //Limit is a float64 because of govaluate, which always seems to pass arguments as float64 (even if no decimal point is present)
 func (set ResultSet) Max(Limit float64) (float64, error) {
@@ -99,7 +101,7 @@ func (set ResultSet) Max(Limit float64) (float64, error) {
 	return max, nil
 }
 
-//Max returns the average value within the resultset
+//Avg returns the average value within the ResultSet
 //If Limit != 0 only the last N values are evaluated
 //Limit is a float64 because of govaluate, which always seems to pass arguments as float64 (even if no decimal point is present)
 func (set ResultSet) Avg(Limit float64) (float64, error) {
@@ -122,6 +124,7 @@ func (set ResultSet) Avg(Limit float64) (float64, error) {
 	return sum / float64(len(set.Results)), nil
 }
 
+//Diff returns the difference between the last two value in the ResultSet
 func (set ResultSet) Diff() (float64, error) {
 	if set.Type() == Text {
 		logger.Error(resultSetLoggingArea, "Something tried to calculate avg for item with wrong type!")
@@ -140,6 +143,7 @@ func (set ResultSet) Diff() (float64, error) {
 	return math.Abs(math.Abs(set.Results[0].ValueNumeric) - math.Abs(set.Results[secondItem].ValueNumeric)), nil
 }
 
+//LastNumeric returns the last numeric value in the given ResultSet
 func (set ResultSet) LastNumeric() (float64, error) {
 	if set.Type() == Text {
 		logger.Error(resultSetLoggingArea, "Something tried to calculate avg for item with wrong type!")
@@ -152,38 +156,3 @@ func (set ResultSet) LastNumeric() (float64, error) {
 
 	return set.Results[0].ValueNumeric, nil
 }
-
-/*
-func (set ResultSet) NumericLast(Count int) (ResultSet, error) {
-	var dummyResultSet ResultSet
-	dummyResultSet.Results = make([]Result, 0)
-
-	if set.Type() == Text {
-		logger.Error(resultSetLoggingArea, "Something tried to get last numeric values for item with wrong type!")
-		return dummyResultSet, ErrWrongItemType
-	}
-
-	if Count < 1 {
-		logger.Error(resultSetLoggingArea, "Something tried to get the last", Count, "results of a resultset, which isn't a valid query")
-		return dummyResultSet, errors.New("count of last items can't be less than 0")
-	}
-
-	if len(set.Results) == 0 {
-		return dummyResultSet, nil
-	}
-
-	indexPointer := len(set.Results)
-	indexTarget := indexPointer - Count
-
-	//If we request more items than present in the result set, just return everything we have
-	if indexTarget < 0 {
-		indexTarget = 0
-	}
-
-	slicedResults := ResultSet{
-		Results: set.Results[indexTarget:indexPointer],
-	}
-
-	return slicedResults, nil
-}
-*/

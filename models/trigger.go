@@ -7,6 +7,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
+//Trigger specifies the layout of a generic trigger stored in the database
 type Trigger struct {
 	ID                primitive.ObjectID `bson:"_id,omitempty"`
 	Name, Description string
@@ -30,6 +31,8 @@ const (
 	HIGH
 )
 
+//TriggerAssignment is used to map a trigger (specified via the TriggerID) to an agent
+//TriggerAssignments are automatically created by the dbtemplate package upon retrieving an agent
 type TriggerAssignment struct {
 	Enabled     bool
 	TriggerID   primitive.ObjectID
@@ -38,11 +41,13 @@ type TriggerAssignment struct {
 	History     []TriggerHistoryEntry
 }
 
+//TriggerHistoryEntry is used to store when a trigger became problematic / unproblematic for a given TriggerAssignment / TriggerMapping
 type TriggerHistoryEntry struct {
 	Time        time.Time
 	Problematic bool
 }
 
+//HasError returns true if the Error string is set to something other than ""
 func (t TriggerAssignment) HasError() bool {
 	return !stringHelper.IsEmpty(t.Error)
 }

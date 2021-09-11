@@ -4,6 +4,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
+//Item specifies the layout of a generic item stored in the database
 type Item struct {
 	ID                primitive.ObjectID `bson:"_id,omitempty"`
 	Name, Description string

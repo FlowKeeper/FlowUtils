@@ -10,6 +10,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
+//Agent defines the layout of a generic agent stored in the database
 type Agent struct {
 	ID                primitive.ObjectID `bson:"_id,omitempty"`
 	Name, Description string
@@ -33,14 +34,15 @@ type Agent struct {
 type AgentOS int
 
 const (
-	//Windows is set on windows machines
+	//Windows AgentOS is set on windows machines
 	Windows AgentOS = iota
-	//Linux is set on linux machines
+	//Linux AgentOS is set on linux machines
 	Linux
+	//Unsupported AgentOS is set if an agent with an unknown OS is registered / loaded
 	Unsupported
 )
 
-//HostState defines if the host is regarded online by the assigned leader
+//AgentState defines if the agent is regarded online by the assigned leader
 type AgentState int
 
 const (
@@ -50,6 +52,7 @@ const (
 	Offline
 )
 
+//AgentosFromString returns the AgentOS iota representation of the specified string
 func AgentosFromString(OS string) (AgentOS, error) {
 	switch strings.ToLower(OS) {
 	case "linux":
@@ -79,6 +82,7 @@ func (a Agent) ProblematicTriggers() []TriggerAssignment {
 	return problematicTriggers
 }
 
+//GetTrigger returns the trigger struct for the specified ID
 func (a Agent) GetTrigger(ID primitive.ObjectID) (Trigger, error) {
 	for _, template := range a.Templates {
 		for _, trigger := range template.Triggers {
@@ -91,6 +95,7 @@ func (a Agent) GetTrigger(ID primitive.ObjectID) (Trigger, error) {
 	return Trigger{}, errors.New("specified trigger wasn't found assigned to agent")
 }
 
+//GetItem returns the item struct for the specified ID
 func (a Agent) GetItem(ID primitive.ObjectID) (Item, error) {
 	for _, template := range a.Templates {
 		for _, item := range template.Items {
@@ -103,6 +108,7 @@ func (a Agent) GetItem(ID primitive.ObjectID) (Item, error) {
 	return Item{}, errors.New("specified item wasn't found assigned to agent")
 }
 
+//GetTriggerMappingByTriggerID returns the TriggerAssignment struct for the specified ID
 func (a Agent) GetTriggerMappingByTriggerID(TriggerID primitive.ObjectID) (TriggerAssignment, error) {
 	for _, mapping := range a.TriggerMappings {
 		if mapping.TriggerID == TriggerID {
@@ -113,6 +119,8 @@ func (a Agent) GetTriggerMappingByTriggerID(TriggerID primitive.ObjectID) (Trigg
 	return TriggerAssignment{}, errors.New("specified triggerassignment wasn't found assigned to agent")
 }
 
+//GetAllItems returns all items assigned to this agent via templates
+//Note that this function already cleans up possibly duplicated items
 func (a Agent) GetAllItems() []Item {
 	items := make([]Item, 0)
 	for _, template := range a.Templates {
@@ -126,16 +134,8 @@ func (a Agent) GetAllItems() []Item {
 	return items
 }
 
-func sliceContainsItem(Slice []Item, Item Item) bool {
-	for _, k := range Slice {
-		if k.ID == Item.ID {
-			return true
-		}
-	}
-
-	return false
-}
-
+//GetAllTriggers returns all triggers assigned to this agent via templates
+//Note that this function already cleans up possibly duplicated triggers
 func (a Agent) GetAllTriggers() []Trigger {
 	triggers := make([]Trigger, 0)
 	for _, template := range a.Templates {
@@ -152,6 +152,16 @@ func (a Agent) GetAllTriggers() []Trigger {
 func sliceContainsTrigger(Slice []Trigger, Trigger Trigger) bool {
 	for _, k := range Slice {
 		if k.ID == Trigger.ID {
+			return true
+		}
+	}
+
+	return false
+}
+
+func sliceContainsItem(Slice []Item, Item Item) bool {
+	for _, k := range Slice {
+		if k.ID == Item.ID {
 			return true
 		}
 	}

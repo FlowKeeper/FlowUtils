@@ -11,6 +11,9 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
+//GetTemplates returns one or multiple template structs for the specified IDs
+//If a template id isn't found in the database, no error is caused
+//Instead the missing template is omitted from the returned item slice
 func GetTemplates(Client *mongo.Database, IDs []primitive.ObjectID) ([]models.Template, error) {
 	templates := make([]models.Template, 0)
 
@@ -34,6 +37,7 @@ func GetTemplates(Client *mongo.Database, IDs []primitive.ObjectID) ([]models.Te
 	return templates, nil
 }
 
+//GetAllTemplates returns all templates from the datbase
 func GetAllTemplates(Client *mongo.Database) ([]models.Template, error) {
 	templates := make([]models.Template, 0)
 

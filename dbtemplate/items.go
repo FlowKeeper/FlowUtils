@@ -12,6 +12,9 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
+//GetItems returns one or multiple item structs for the specified IDs
+//If a item id isn't found in the database, no error is caused
+//Instead the missing item is omitted from the returned item slice
 func GetItems(Client *mongo.Database, IDs []primitive.ObjectID) ([]models.Item, error) {
 	items := make([]models.Item, 0)
 
@@ -31,6 +34,8 @@ func GetItems(Client *mongo.Database, IDs []primitive.ObjectID) ([]models.Item, 
 	return items, nil
 }
 
+//GetItemByName gets the appropriate item which matches the specified Name
+//WARNING: The query is case sensitive
 func GetItemByName(Client *mongo.Database, Name string) (models.Item, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()

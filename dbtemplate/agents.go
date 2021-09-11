@@ -15,10 +15,12 @@ import (
 
 const loggingArea = "DB"
 
+//GetAgent returns the appropriate agent for the given ID
 func GetAgent(Client *mongo.Database, ID primitive.ObjectID) (models.Agent, error) {
 	return getAgentByField(Client, "_id", ID)
 }
 
+//GetAgent returns the appropriate agent for the given UUID
 func GetAgentByUUID(Client *mongo.Database, UUID uuid.UUID) (models.Agent, error) {
 	return getAgentByField(Client, "agentuuid", UUID)
 }
@@ -49,7 +51,8 @@ func getAgentByField(Client *mongo.Database, Field string, Value interface{}) (m
 	return agent, nil
 }
 
-func GetAgents(Client *mongo.Database) ([]models.Agent, error) {
+//GetAllAgents returns all agents from the database
+func GetAllAgents(Client *mongo.Database) ([]models.Agent, error) {
 	var agents []models.Agent
 
 	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
@@ -119,10 +122,12 @@ func populateAgentFields(Client *mongo.Database, Agent *models.Agent) error {
 	return nil
 }
 
+//AddTriggerAssignment persist a mapping between an agent and a trigger
 func AddTriggerAssignment(Client *mongo.Database, AgentID primitive.ObjectID, TriggerID primitive.ObjectID) error {
 	return AddTriggerAssignments(Client, AgentID, []primitive.ObjectID{TriggerID})
 }
 
+//AddTriggerAssignments persist a mapping between an agent and one or multiple triggers
 func AddTriggerAssignments(Client *mongo.Database, AgentID primitive.ObjectID, TriggerIDs []primitive.ObjectID) error {
 	newMappings := make([]models.TriggerAssignment, 0)
 	for _, k := range TriggerIDs {
