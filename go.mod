@@ -1,4 +1,4 @@
-module gitlab.cloud.spuda.net/flowkeeper/flowutils/v2
+module github.com/FlowKeeper/FlowUtils/v2
 
 go 1.17
 

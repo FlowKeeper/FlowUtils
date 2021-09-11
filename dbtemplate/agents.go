@@ -5,9 +5,9 @@ import (
 	"errors"
 	"time"
 
+	"github.com/FlowKeeper/FlowUtils/v2/models"
 	"github.com/google/uuid"
 	"gitlab.cloud.spuda.net/Wieneo/golangutils/v2/logger"
-	"gitlab.cloud.spuda.net/flowkeeper/flowutils/v2/models"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
