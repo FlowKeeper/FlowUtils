@@ -129,6 +129,7 @@ func AddTriggerAssignments(Client *mongo.Database, AgentID primitive.ObjectID, T
 		newMappings = append(newMappings, models.TriggerAssignment{
 			TriggerID: k,
 			Enabled:   true,
+			History:   make([]models.TriggerHistoryEntry, 0),
 		})
 	}
 
