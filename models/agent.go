@@ -14,7 +14,7 @@ type Agent struct {
 	ID                primitive.ObjectID `bson:"_id,omitempty"`
 	Name, Description string
 	AgentUUID         uuid.UUID
-	Enabled           bool
+	Enabled, Deleted  bool
 	LastSeen          time.Time
 	OS                AgentOS
 	State             AgentState
