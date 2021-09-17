@@ -19,6 +19,10 @@ func GetTrigger(Client *mongo.Database, ID primitive.ObjectID) (models.Trigger, 
 		return models.Trigger{}, err
 	}
 
+	if len(triggers) == 0 {
+		return models.Trigger{}, mongo.ErrNoDocuments
+	}
+
 	return triggers[0], nil
 }
 
