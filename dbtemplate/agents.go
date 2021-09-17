@@ -57,7 +57,10 @@ func GetAllAgents(Client *mongo.Database) ([]models.Agent, error) {
 
 	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
 	defer cancel()
-	result, err := Client.Collection("agents").Find(ctx, bson.M{"deleted": false})
+	result, err := Client.Collection("agents").Find(ctx, bson.M{"$or": []bson.M{
+		{"deleted": false},
+		{"deleted": bson.M{"$exists": false}},
+	}})
 
 	if err != nil {
 		logger.Error(loggingArea, "Couldn't fetch agents from db:", err)
